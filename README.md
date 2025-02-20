@@ -14,8 +14,8 @@ Filer is a cross-platform file explorer that works on Linux and Windows. It is w
 ## Prerequisites
 
 - C++ compiler (clang++ or MSVC)
-- Qt framework (version X.X.X or higher)
 - FTXUI framework, for terminal UI (https://github.com/ArthurSonzogni/FTXUI)
+- GTK framework (gtk.org)
 - Operating system: Linux or Windows
 
 ## Build for Windows
