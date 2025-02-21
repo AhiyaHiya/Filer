@@ -1,6 +1,9 @@
 #include <iostream>
+#include <string>
 
-int main(int argc, char* argv[])
+constexpr auto noErrors = 0;
+constexpr auto errorDetected = 1;
+int main(int argc, char *argv[])
 {
     if (argc > 1)
     {
@@ -9,8 +12,18 @@ int main(int argc, char* argv[])
         {
             std::cout << argv[i] << std::endl;
         }
-    } else {
+    }
+    else
+    {
         std::cout << "No arguments provided." << std::endl;
     }
-    return 0;
+
+    // Get the home directory from the environment variable "HOME"
+    const auto home = std::getenv("HOME");
+    if (home.empty())
+    {
+        std::cerr << "Error: HOME environment variable not set." << std::endl;
+        return errorDetected;
+    }
+    return noErrors;
 }
