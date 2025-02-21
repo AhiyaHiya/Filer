@@ -18,11 +18,23 @@ Filer is a cross-platform file explorer that works on Linux and Windows. It is w
 - FTXUI framework, for terminal UI (https://github.com/ArthurSonzogni/FTXUI)
 - Operating system: Linux or Windows
 
-## Installation
+## Build for Windows
 
 1. Clone the repository: `git clone https://github.com/AhiyaHiya/Filer.git`
 2. Navigate to the project directory: `cd Filer`
 3. Build the project: `cmake -S . -B build -G "Visual Studio 2022"`
+4. Run the executable: `./Filer` or `Filer.exe`
+
+## Build using Ninja, for macOS
+To build the project using Ninja, follow these steps:
+
+1. Clone the repository: `git clone https://github.com/AhiyaHiya/Filer.git`
+2. Navigate to the project directory: `cd Filer`
+3. Build the project with Ninja:
+    ```sh
+    cmake -S . -B build -G Ninja -DCMAKE_CXX_FLAGS="-L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
+    cmake --build build
+    ```
 4. Run the executable: `./Filer` or `Filer.exe`
 
 ## Usage
