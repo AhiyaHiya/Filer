@@ -1,3 +1,6 @@
+
+#include <ftxui/component/screen_interactive.hpp>
+
 #include <iostream>
 #include <string>
 
@@ -6,19 +9,6 @@ constexpr auto errorDetected = 1;
 
 int main(int argc, char *argv[])
 {
-    if (argc > 1)
-    {
-        std::cout << "Arguments:" << std::endl;
-        for (int i = 1; i < argc; ++i)
-        {
-            std::cout << argv[i] << std::endl;
-        }
-    }
-    else
-    {
-        std::cout << "No arguments provided." << std::endl;
-    }
-
     // Get the home directory from the environment variable "HOME"
     const auto home = std::string(std::getenv("HOME"));
     if (home.empty())
@@ -26,5 +16,8 @@ int main(int argc, char *argv[])
         std::cerr << "Error: HOME environment variable not set." << std::endl;
         return errorDetected;
     }
+
+    auto screen = ftxui::ScreenInteractive::TerminalOutput();
+
     return noErrors;
 }
