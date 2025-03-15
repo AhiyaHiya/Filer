@@ -13,29 +13,39 @@ Filer is a cross-platform file explorer that works on Linux and Windows. It is w
 
 ## Prerequisites
 
-- C++ compiler (clang++ or MSVC)
+- C++ compiler (clang++ or MSVC or similar)
 - FTXUI framework, for terminal UI (https://github.com/ArthurSonzogni/FTXUI)
 - GTK framework (gtk.org)
-- Operating system: Linux or Windows
+- Operating system: Linux, macOS, Windows
 
-## Build for Windows
+## Building...
 
-1. Clone the repository: `git clone https://github.com/AhiyaHiya/Filer.git`
-2. Navigate to the project directory: `cd Filer`
-3. Build the project: `cmake -S . -B build -G "Visual Studio 2022"`
-4. Run the executable: `./Filer` or `Filer.exe`
-
-## Build using Ninja, for macOS
-To build the project using Ninja, follow these steps:
+### For all platforms
 
 1. Clone the repository: `git clone https://github.com/AhiyaHiya/Filer.git`
 2. Navigate to the project directory: `cd Filer`
-3. Build the project with Ninja:
-    ```sh
-    cmake -S . -B build -G Ninja -DCMAKE_CXX_FLAGS="-L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
-    cmake --build build
-    ```
-4. Run the executable: `./Filer` or `Filer.exe`
+
+### Linux
+
+```sh
+cmake -S . -B build -G Ninja
+cmake --build ./build
+```
+
+### Windows
+
+```sh
+cmake -S . -B build -G "Visual Studio 2022"
+cmake --build .\build
+```
+
+### macOS
+#### Ninja
+
+```sh
+cmake -S . -B build -G Ninja -DCMAKE_CXX_FLAGS="-L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
+cmake --build ./build
+```
 
 ## Usage
 
