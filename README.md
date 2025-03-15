@@ -22,12 +22,17 @@ Filer is a cross-platform file explorer that works on Linux and Windows. It is w
 
 ### For all platforms
 
-1. Clone the repository: `git clone https://github.com/AhiyaHiya/Filer.git`
-2. Navigate to the project directory: `cd Filer`
+```sh
+git clone https://github.com/AhiyaHiya/Filer.git
+cd Filer
+python3 -m venv venv_filer
+```
 
 ### Linux
 
 ```sh
+source venv_filer/bin/activate
+pip install conan
 cmake -S . -B build -G Ninja
 cmake --build ./build
 ```
@@ -35,6 +40,8 @@ cmake --build ./build
 ### Windows
 
 ```sh
+venv_filer\Scripts\activate.bat
+pip install conan
 cmake -S . -B build -G "Visual Studio 2022"
 cmake --build .\build
 ```
