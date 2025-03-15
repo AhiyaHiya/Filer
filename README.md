@@ -33,7 +33,7 @@ python3 -m venv venv_filer
 ```sh
 source venv_filer/bin/activate
 pip install conan
-cmake -S . -B build -G Ninja
+cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_CXX_STANDARD=23
 cmake --build ./build
 ```
 
