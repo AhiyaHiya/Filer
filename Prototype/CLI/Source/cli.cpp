@@ -10,10 +10,16 @@ constexpr auto errorDetected = 1;
 int main(int argc, char *argv[])
 {
     // Get the home directory from the environment variable "HOME"
-    const auto home = std::string(std::getenv("HOME"));
+    const auto homeEnv = std::getenv("HOME");
+    if (homeEnv == nullptr)
+    {
+        std::cerr << "Error: HOME environment variable not set.\n";
+        return errorDetected;
+    }
+    const auto home = std::string(homeEnv);
     if (home.empty())
     {
-        std::cerr << "Error: HOME environment variable not set." << std::endl;
+        std::cerr << "Error: HOME variable contains empty path.\n";
         return errorDetected;
     }
 
