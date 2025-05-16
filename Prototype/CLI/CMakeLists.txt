@@ -1,5 +1,6 @@
 
 find_package(ftxui CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
 
 add_executable(filer
     "Include/last_file_path.hpp"
@@ -14,4 +15,5 @@ target_link_libraries(filer
         ftxui::dom
         ftxui::screen
         ftxui::component
+        spdlog::spdlog
 )
