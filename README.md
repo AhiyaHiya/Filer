@@ -1,6 +1,10 @@
 # Filer
 
-Filer is a cross-platform file explorer that works on Linux and Windows. It is written in C++ and provides a user-friendly interface for navigating and managing files and directories.
+Filer is a cross-platform file explorer targeted for Linux and Windows.
+
+It is written in C++ for speed.
+
+It provides a pleasant interface for navigating and managing files and directories.
 
 ## Features
 
@@ -15,8 +19,8 @@ Filer is a cross-platform file explorer that works on Linux and Windows. It is w
 
 - C++ compiler (clang++ or MSVC or similar)
 - FTXUI framework, for terminal UI (https://github.com/ArthurSonzogni/FTXUI)
-- GTK framework (gtk.org)
-- Operating system: Linux, macOS, Windows
+- GTKmm framework, for GUI app (gtk.org)
+- Development operating system: Linux, macOS, Windows
 
 ## Building...
 
@@ -37,6 +41,14 @@ cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAK
 cmake --build ./build
 ```
 
+### macOS
+#### Ninja
+
+```sh
+cmake -S . -B build -G Ninja -DCMAKE_CXX_FLAGS="-L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
+cmake --build ./build
+```
+
 ### Windows
 
 ```sh
@@ -46,13 +58,6 @@ cmake -S . -B build -G "Visual Studio 2022"
 cmake --build .\build
 ```
 
-### macOS
-#### Ninja
-
-```sh
-cmake -S . -B build -G Ninja -DCMAKE_CXX_FLAGS="-L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
-cmake --build ./build
-```
 
 ## Usage
 
