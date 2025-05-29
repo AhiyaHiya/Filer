@@ -29,14 +29,11 @@ It provides a pleasant interface for navigating and managing files and directori
 ```sh
 git clone https://github.com/AhiyaHiya/Filer.git
 cd Filer
-python3 -m venv venv_filer
 ```
 
 ### Linux
 
 ```sh
-source venv_filer/bin/activate
-pip install conan
 cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_CXX_STANDARD=23
 cmake --build ./build
 ```
@@ -52,8 +49,6 @@ cmake --build ./build
 ### Windows
 
 ```sh
-venv_filer\Scripts\activate.bat
-pip install conan
 cmake -S . -B build -G "Visual Studio 2022"
 cmake --build .\build
 ```
