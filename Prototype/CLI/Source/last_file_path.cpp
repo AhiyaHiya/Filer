@@ -27,20 +27,19 @@ auto get_last_path() -> std::filesystem::path
         std::cerr << "Error: USERPROFILE or HOMEDRIVE/HOMEPATH environment variables not set.\n";
         return {};
     }
-    const auto home = std::string(homeEnv);
 #else
     const char *homeEnv = std::getenv("HOME");
     if (!homeEnv)
     {
         std::cerr << "Error: HOME environment variable not set.\n";
         return {};
-    }
-    const auto home = std::string(homeEnv);
+    }    
 #endif
+    auto home = std::string(homeEnv);
     if (home.empty())
     {
         std::cerr << "Error: Home directory environment variable contains empty path.\n";
         return {};
     }
-    return std::filesystem::path(home);// / ".filer_last_path";
+    return std::filesystem::path(home) / ".filer_last_path";
 }
