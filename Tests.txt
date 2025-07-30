@@ -2,3 +2,8 @@ Brief: Related to testing
 
 Capabilities
 Starts up at home directory of user
+
+
+You have to add the following to the CMake options
+
+-DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake
