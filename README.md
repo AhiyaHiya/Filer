@@ -21,6 +21,7 @@ It provides a pleasant interface for navigating and managing files and directori
 - FTXUI framework, for terminal UI (https://github.com/ArthurSonzogni/FTXUI)
 - GTKmm framework, for GUI app (gtk.org)
 - Development operating system: Linux, macOS, Windows
+- vcpkg, used for package management
 
 ## Building...
 
@@ -34,7 +35,7 @@ cd Filer
 ### Linux
 
 ```sh
-cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_CXX_STANDARD=23
+cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_CXX_STANDARD=23
 cmake --build ./build
 ```
 
@@ -42,14 +43,14 @@ cmake --build ./build
 #### Ninja
 
 ```sh
-cmake -S . -B build -G Ninja -DCMAKE_CXX_FLAGS="-L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
+cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_CXX_FLAGS="-L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
 cmake --build ./build
 ```
 
 ### Windows
 
 ```sh
-cmake -S . -B build -G "Visual Studio 2022"
+cmake -S . -B build -G "Visual Studio 2022" -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake
 cmake --build .\build
 ```
 
