@@ -27,7 +27,8 @@ std::vector<fs::directory_entry> GetEntries(const fs::path &path)
         {
             entries.push_back(entry);
         }
-        std::sort(entries.begin(), entries.end(), [](const fs::directory_entry &a, const fs::directory_entry &b) {
+        std::sort(entries.begin(), entries.end(), [](const fs::directory_entry &a, const fs::directory_entry &b)
+        {
             // Folders first, then files, both alphabetically
             if (a.is_directory() != b.is_directory())
                 return a.is_directory() > b.is_directory();
@@ -43,37 +44,37 @@ std::vector<fs::directory_entry> GetEntries(const fs::path &path)
 int main(int argc, char *argv[])
 {
     spdlog::init_thread_pool(8192, 1); // Queue size and thread count
-    auto async_logger = spdlog::create_async<spdlog::sinks::stdout_color_sink_mt>("async_console");
-    async_logger->info("Async logging enabled!");
+    auto asyncLogger = spdlog::create_async<spdlog::sinks::stdout_color_sink_mt>("async_console");
+    asyncLogger->info("Async logging enabled!");
 
     const auto lastPath = get_last_path();
     if (lastPath.empty() || !fs::exists(lastPath) || !fs::is_directory(lastPath))
     {
         const auto message = "Invalid or missing last path: " + lastPath.string();
-        async_logger->error(message);
+        asyncLogger->error(message);
         return errorDetected;
     }
 
     auto screen = ftxui::ScreenInteractive::TerminalOutput();
 
     // Miller columns state
-    auto column_paths = std::vector<fs::path>{lastPath};
-    auto selected_indices = std::vector<int>{0};
+    auto columnPaths = std::vector<fs::path>{lastPath};
+    auto selectedIndexes = std::vector<int>{0};
 
     auto renderer = ftxui::Renderer([&] {
         auto columns = std::vector<ftxui::Element>();
 
         // For each column, build a vertical list of entries
-        for (size_t col = 0; col < column_paths.size(); ++col)
+        for (size_t col = 0; col < columnPaths.size(); ++col)
         {
-            auto entries = GetEntries(column_paths[col]);
+            auto entries = GetEntries(columnPaths[col]);
             auto items = std::vector<ftxui::Element>();
             for (size_t i = 0; i < entries.size(); ++i)
             {
-                auto name = entries[i].path().filename().string();
-                bool is_dir = entries[i].is_directory();
-                auto elem = ftxui::text(name) | (is_dir ? ftxui::bold : ftxui::nothing);
-                if (i == selected_indices[col])
+                const auto name = entries[i].path().filename().string();
+                const auto isDir = entries[i].is_directory();
+                auto elem = ftxui::text(name) | (isDir ? ftxui::bold : ftxui::nothing);
+                if (i == selectedIndexes[col])
                     elem = elem | ftxui::inverted;
                 items.push_back(elem);
             }
@@ -91,35 +92,35 @@ int main(int argc, char *argv[])
 
     // Keyboard navigation
     auto component = ftxui::CatchEvent(renderer, [&](const ftxui::Event &event) {
-        size_t col = column_paths.size() - 1;
-        auto entries = GetEntries(column_paths[col]);
+        const auto col = columnPaths.size() - 1;
+        auto entries = GetEntries(columnPaths[col]);
         if (event == ftxui::Event::ArrowDown)
         {
             if (!entries.empty())
-                selected_indices[col] = (selected_indices[col] + 1) % entries.size();
+                selectedIndexes[col] = (selectedIndexes[col] + 1) % entries.size();
             return true;
         }
         if (event == ftxui::Event::ArrowUp)
         {
             if (!entries.empty())
-                selected_indices[col] = (selected_indices[col] + entries.size() - 1) % entries.size();
+                selectedIndexes[col] = (selectedIndexes[col] + entries.size() - 1) % entries.size();
             return true;
         }
         if (event == ftxui::Event::ArrowRight || event == ftxui::Event::Return)
         {
-            if (!entries.empty() && entries[selected_indices[col]].is_directory())
+            if (!entries.empty() && entries[selectedIndexes[col]].is_directory())
             {
-                column_paths.push_back(entries[selected_indices[col]].path());
-                selected_indices.push_back(0);
+                columnPaths.push_back(entries[selectedIndexes[col]].path());
+                selectedIndexes.push_back(0);
             }
             return true;
         }
         if (event == ftxui::Event::ArrowLeft)
         {
-            if (column_paths.size() > 1)
+            if (columnPaths.size() > 1)
             {
-                column_paths.pop_back();
-                selected_indices.pop_back();
+                columnPaths.pop_back();
+                selectedIndexes.pop_back();
             }
             return true;
         }
