@@ -57,11 +57,35 @@ int main(int argc, char *argv[])
 
     auto screen = ftxui::ScreenInteractive::TerminalOutput();
 
+    // Menu bar state
+    auto menuEntries = std::vector<std::string>{"File"};
+    auto submenus = std::vector<std::vector<std::string>>{{"Quit"}};
+    auto menuSelected = 0;
+    auto submenuSelected = 0;
+    auto menuActive = false;
+
     // Miller columns state
     auto columnPaths = std::vector<fs::path>{lastPath};
     auto selectedIndexes = std::vector<int>{0};
 
+    // Menu component
+    auto menu = ftxui::Menu(&menuEntries, &menuSelected);
+    auto submenu = ftxui::Menu(&submenus[0], &submenuSelected);
+
     auto renderer = ftxui::Renderer([&] {
+        auto menuBar = ftxui::hbox({
+            ftxui::text(" File ") | (menuActive && menuSelected == 0 ? ftxui::inverted : ftxui::nothing)
+        }) | ftxui::border;
+
+        ftxui::Element submenuBox;
+        if (menuActive && menuSelected == 0) {
+            submenuBox = ftxui::vbox({
+                ftxui::text(" Quit ") | (submenuSelected == 0 ? ftxui::inverted : ftxui::nothing)
+            }) | ftxui::border;
+        } else {
+            submenuBox = ftxui::text("");
+        }
+
         auto columns = std::vector<ftxui::Element>();
 
         // For each column, build a vertical list of entries
@@ -87,11 +111,43 @@ int main(int argc, char *argv[])
         while (columns.size() < 3)
             columns.push_back(ftxui::vbox({ftxui::text("")}) | ftxui::border);
 
-        return ftxui::hbox(std::move(columns)) | ftxui::border | ftxui::size(ftxui::WIDTH, ftxui::GREATER_THAN, 60);
+        auto mainContent = ftxui::hbox(std::move(columns)) | ftxui::border | ftxui::size(ftxui::WIDTH, ftxui::GREATER_THAN, 60);
+
+        if (menuActive && menuSelected == 0)
+            return ftxui::vbox({menuBar, submenuBox, mainContent});
+        else
+            return ftxui::vbox({menuBar, mainContent});
     });
 
     // Keyboard navigation
     auto component = ftxui::CatchEvent(renderer, [&](const ftxui::Event &event) {
+        // Menu bar navigation
+        if (event == ftxui::Event::Character('f')) {
+            menuActive = !menuActive;
+            return true;
+        }
+        if (menuActive) {
+            if (event == ftxui::Event::ArrowDown) {
+                submenuSelected = (submenuSelected + 1) % submenus[0].size();
+                return true;
+            }
+            if (event == ftxui::Event::ArrowUp) {
+                submenuSelected = (submenuSelected + submenus[0].size() - 1) % submenus[0].size();
+                return true;
+            }
+            if (event == ftxui::Event::Return) {
+                if (menuSelected == 0 && submenuSelected == 0) {
+                    screen.Exit();
+                    return true;
+                }
+            }
+            if (event == ftxui::Event::Escape) {
+                menuActive = false;
+                return true;
+            }
+            return false;
+        }
+
         const auto col = columnPaths.size() - 1;
         auto entries = GetEntries(columnPaths[col]);
         if (event == ftxui::Event::ArrowDown)
