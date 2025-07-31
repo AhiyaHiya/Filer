@@ -49,7 +49,8 @@ int main(int argc, char *argv[])
     const auto lastPath = get_last_path();
     if (lastPath.empty() || !fs::exists(lastPath) || !fs::is_directory(lastPath))
     {
-        std::cerr << "Invalid or missing last path: " << lastPath << std::endl;
+        const auto message = "Invalid or missing last path: " + lastPath.string();
+        async_logger->error(message);
         return errorDetected;
     }
 
