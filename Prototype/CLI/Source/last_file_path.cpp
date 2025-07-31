@@ -41,5 +41,5 @@ auto get_last_path() -> std::filesystem::path
         std::cerr << "Error: Home directory environment variable contains empty path.\n";
         return {};
     }
-    return std::filesystem::path(home) / ".filer_last_path";
+    return std::filesystem::path(home);// / ".filer_last_path";
 }
