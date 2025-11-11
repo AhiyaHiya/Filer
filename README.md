@@ -35,7 +35,7 @@ cd Filer
 ### Linux
 
 ```sh
-cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_CXX_STANDARD=23
+cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=./ThirdParty/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_CXX_STANDARD=23
 cmake --build ./build
 ```
 
@@ -43,14 +43,14 @@ cmake --build ./build
 #### Ninja
 
 ```sh
-cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_CXX_FLAGS="-L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
+cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=./ThirdParty/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_CXX_FLAGS="-L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
 cmake --build ./build
 ```
 
 ### Windows
 
 ```sh
-cmake -S . -B build -G "Visual Studio 17 2022" -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake
+cmake -S . -B build -G "Visual Studio 17 2022" -DCMAKE_TOOLCHAIN_FILE=.\ThirdParty\vcpkg\scripts\buildsystems\vcpkg.cmake
 cmake --build .\build
 ```
 
