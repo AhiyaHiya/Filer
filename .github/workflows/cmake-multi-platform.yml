@@ -51,6 +51,13 @@ jobs:
       # Ensure any repository submodules are initialized before configuring CMake
       run: git submodule update --init --recursive
 
+    # Install bison and other dependencies
+    - name: Install system dependencies
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y bison
+
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
       id: strings
