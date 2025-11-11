@@ -18,9 +18,14 @@ It provides a pleasant interface for navigating and managing files and directori
 ## Prerequisites
 
 - C++ compiler (clang++ or MSVC or similar)
+- Development operating system: Linux, macOS, Windows
+
+## Components
+
+Components to make the project work:
+
 - FTXUI framework, for terminal UI (https://github.com/ArthurSonzogni/FTXUI)
 - GTKmm framework, for GUI app (gtk.org)
-- Development operating system: Linux, macOS, Windows
 - vcpkg, used for package management
 
 ## Building...
@@ -30,6 +35,7 @@ It provides a pleasant interface for navigating and managing files and directori
 ```sh
 git clone https://github.com/AhiyaHiya/Filer.git
 cd Filer
+git submodule update --init --recursive
 ```
 
 ### Linux
@@ -39,8 +45,7 @@ cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=./ThirdParty/vcpkg/scripts/b
 cmake --build ./build
 ```
 
-### macOS
-#### Ninja
+### macOS using Ninja
 
 ```sh
 cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=./ThirdParty/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_CXX_FLAGS="-L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
