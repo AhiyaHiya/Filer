@@ -7,8 +7,7 @@
       "name": "ftxui",
       "version>=": "5.0.0"
     },
-    {
-      "name": "spdlog"
-    }
+    "spdlog",
+    "gtkmm"
   ]
 }
