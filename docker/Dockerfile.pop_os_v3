@@ -1,0 +1,48 @@
+FROM ubuntu:22.04
+
+# Set non-interactive frontend to avoid prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update package lists and install dependencies
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y \
+        cmake \
+        bison \
+        curl zip unzip tar \
+        autoconf autoconf-archive automake libtool \
+        libx11-dev libxft-dev libxext-dev \
+        libgles2-mesa-dev \
+        libxrandr-dev libxi-dev libxcursor-dev libxfixes-dev libxdamage-dev libxcomposite-dev libxinerama-dev \
+        build-essential \
+        g++ \
+        git \
+        ninja-build \
+        pkg-config \
+        python3 \
+        python3-pip \
+        wget && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Meson via pip
+RUN pip3 install meson
+
+WORKDIR /app
+
+RUN git clone https://github.com/microsoft/vcpkg.git /app/vcpkg && \
+    /app/vcpkg/bootstrap-vcpkg.sh
+
+# Pre-install vcpkg dependencies to cache them
+RUN /app/vcpkg/vcpkg install gtk:x64-linux gtkmm:x64-linux spdlog:x64-linux fmt:x64-linux
+
+# Copy the project source from the root of the build context
+COPY . /app/Filer
+WORKDIR /app/Filer
+
+# Remove any existing build directory to avoid CMake cache issues
+RUN rm -rf build
+
+# Configure vcpkg and build the project
+RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=/app/vcpkg/scripts/buildsystems/vcpkg.cmake
+RUN cmake --build build --parallel $(nproc)
+
+CMD ["/bin/bash"]

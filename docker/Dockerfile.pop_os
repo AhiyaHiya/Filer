@@ -1,0 +1,173 @@
+FROM ubuntu:22.04
+
+# Set non-interactive frontend to avoid prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update package lists and install dependencies
+# Note: we install meson/ninja/python3 and common build deps required when
+# compiling glib and other GNOME libraries from source. We remove the
+# `libgtk-4-*-dev` packages here to avoid conflicts when installing a
+# custom-built glib into /usr later in this Dockerfile.
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y \
+        autoconf \
+        automake \
+        autotools-dev \
+        build-essential \
+        cmake \
+        docbook-xsl \
+        g++ \
+        git \
+        libcairo2-dev \
+        libffi-dev \
+        libfontconfig1-dev \
+        # libgtk-4-bin \
+        # libgtk-4-dev \
+        # libgtk-4-common \
+        libmount-dev \
+        libpcre2-dev \
+        libpixman-1-dev \
+        libpng-dev \
+        libselinux1-dev \
+        libxml-parser-perl \
+        mm-common \
+        ninja-build \
+        pkg-config \
+        python3 \
+        python3-docutils \
+        python3-pip \
+        wget \
+        zlib1g-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Meson via pip
+RUN pip3 install meson
+
+WORKDIR /app
+
+# Install libsigc++-3.6.0
+RUN wget https://github.com/libsigcplusplus/libsigcplusplus/releases/download/3.6.0/libsigc++-3.6.0.tar.xz && \
+    tar Jxvf libsigc++-3.6.0.tar.xz && \
+    cd libsigc++-3.6.0 && \
+    ./autogen.sh --prefix=/usr/local && \
+    make -j$(nproc) && \
+    make install && \
+    cd .. && \
+    rm -rf libsigc++-3.6.0*
+
+# Create symlinks for libsigc++ if needed
+RUN if [ ! -f /usr/lib/libsigc-3.0.so ]; then \
+        ln -s /usr/local/lib/libsigc-3.0.so.0.0.0 /usr/lib/libsigc-3.0.so.0.0.0 && \
+        ln -s /usr/local/lib/libsigc-3.0.la /usr/lib/libsigc-3.0.la && \
+        ln -s /usr/local/lib/libsigc-3.0.so /usr/lib/libsigc-3.0.so && \
+        ln -s /usr/local/lib/libsigc-3.0.so.0 /usr/lib/libsigc-3.0.so.0; \
+    fi
+
+# Install cairomm
+RUN wget https://www.cairographics.org/releases/cairomm-1.18.0.tar.xz && \
+    tar Jxvf cairomm-1.18.0.tar.xz && \
+    cd cairomm-1.18.0 && \
+    mkdir bld && \
+    cd bld && \
+    meson setup ..         \
+      --prefix=/usr        \
+      --buildtype=release  \
+      -D build-tests=false  && \
+    #   -D boost-shared=true && \
+    ninja -j$(nproc) && \
+    ninja install && \
+    cd ../.. && \
+    rm -rf cairomm-1.18.0
+
+# RUN wget https://download.gnome.org/sources/goocanvasmm/0.6/goocanvasmm-0.6.0.tar.gz && \
+#     tar xvf goocanvasmm-0.6.0.tar.gz && \
+#     cd goocanvasmm-0.6.0 && \
+#     ./autogen.sh --prefix=/usr && \
+#     make -j$(nproc) && \
+#     make install && \
+#     cd .. && \
+#     rm -rf goocanvasmm-0.6.0*
+
+# Install pangomm-2.50.0
+# RUN wget https://download.gnome.org/sources/pangomm/2.50/pangomm-2.50.0.tar.xz && \
+#     tar Jxvf pangomm-2.50.0.tar.xz && \
+#     cd pangomm-2.50.0 && \
+#     ./autogen.sh --prefix=/usr && \
+#     make -j$(nproc) && \
+#     make install && \
+#     cd .. && \
+#     rm -rf pangomm-2.50.0*
+
+RUN wget https://download.gnome.org/sources/glib/2.86/glib-2.86.1.tar.xz && \
+    wget https://download.gnome.org/sources/glib/2.86/glib-2.86.1.sha256sum && \
+    sha256sum -c --ignore-missing glib-2.86.1.sha256sum && \
+    tar Jxvf glib-2.86.1.tar.xz && \
+    cd glib-2.86.1 && \
+    mkdir build && \
+    cd build && \
+    meson setup .. \
+        --prefix=/usr \
+        --buildtype=release \
+        -Dintrospection=disabled \
+        -Dglib_debug=disabled \
+        -Dman-pages=enabled \
+        -Dsysprof=disabled && \
+    ninja -j$(nproc) && \
+    ninja install && \
+    cd ../.. && \
+    rm -rf glib-2.86.1*
+
+# Install glibmm-2.86.0
+RUN wget https://download.gnome.org/sources/glibmm/2.86/glibmm-2.86.0.tar.xz && \
+    tar Jxvf glibmm-2.86.0.tar.xz && \
+    cd glibmm-2.86.0 && \
+    ./autogen.sh --prefix=/usr && \
+    make -j$(nproc) && \
+    make install && \
+    cd .. && \
+    rm -rf glibmm-2.86.0*
+
+RUN wget https://download.gnome.org/sources/gtk/4.20/gtk-4.20.2.tar.xz && \
+    wget https://download.gnome.org/sources/gtk/4.20/gtk-4.20.2.sha256sum && \
+    sha256sum -c --ignore-missing gtk-4.20.2.sha256sum && \
+    tar Jxvf gtk-4.20.2.tar.xz && \
+    cd gtk-4.20.2 && \
+    mkdir build && \
+    cd build && \
+    meson setup ..         \
+      --prefix=/usr        \
+      --buildtype=release  \
+      -D build-tests=false  \
+      -D vulkan=enabled  && \
+    ninja -j$(nproc) && \
+    ninja install && \
+    cd ../.. && \
+    rm -rf gtk-4.20.2
+
+# Install gtkmm-4.8.0 with checksum verification
+RUN wget https://download.gnome.org/sources/gtkmm/4.8/gtkmm-4.8.0.tar.xz && \
+    wget https://download.gnome.org/sources/gtkmm/4.8/gtkmm-4.8.0.sha256sum && \
+    sha256sum -c --ignore-missing gtkmm-4.8.0.sha256sum && \
+    tar Jxvf gtkmm-4.8.0.tar.xz && \
+    cd gtkmm-4.8.0 && \
+    ./autogen.sh --prefix=/usr && \
+    make -j$(nproc) && \
+    make install && \
+    cd .. && \
+    rm -rf gtkmm-4.8.0*
+
+# Pre-install vcpkg dependencies to cache them
+RUN /app/vcpkg/vcpkg install spdlog:x64-linux fmt:x64-linux
+
+# Copy the project source from the root of the build context
+COPY . /app/Filer
+WORKDIR /app/Filer
+
+# Remove any existing build directory to avoid CMake cache issues
+RUN rm -rf build
+
+# Configure vcpkg and build the project
+RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=/app/vcpkg/scripts/buildsystems/vcpkg.cmake
+RUN cmake --build build --parallel $(nproc)
+
+CMD ["/bin/bash"]

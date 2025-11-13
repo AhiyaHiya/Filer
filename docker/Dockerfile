@@ -5,26 +5,31 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install system dependencies for building gtk and gtkmm
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    cmake \
-    ninja-build \
-    git \
-    python3 \
-    python3-pip \
-    pkg-config \
-    libx11-dev \
-    libxrandr-dev \
-    libxrender-dev \
-    libxext-dev \
-    libxi-dev \
-    libxinerama-dev \
-    libxcursor-dev \
-    libxdamage-dev \
-    libxfixes-dev \
-    libgtk-4-dev \
     autoconf \
     automake \
+    bison \
+    build-essential \
+    cmake \
+    curl \
+    git \
+    libgtk-4-dev \
     libtool \
+    libx11-dev \
+    libxcursor-dev \
+    libxdamage-dev \
+    libxext-dev \
+    libxfixes-dev \
+    libxi-dev \
+    libxinerama-dev \
+    libxrandr-dev \
+    libxrender-dev \
+    ninja-build \
+    pkg-config \
+    python3 \
+    python3-pip \
+    tar \
+    unzip \
+    zip \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Meson via pip (vcpkg uses its own Meson, but this ensures compatibility)
@@ -39,8 +44,11 @@ RUN git clone https://github.com/microsoft/vcpkg.git /app/vcpkg && \
 COPY . /app/Filer
 WORKDIR /app/Filer
 
+# Remove any existing build directory to avoid CMake cache issues
+RUN rm -rf build
+
 # Configure vcpkg and build the project
-RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=/app/vcpkg/scripts/buildsystems/vcpkg.cmake
+RUN cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=/app/vcpkg/scripts/buildsystems/vcpkg.cmake
 RUN cmake --build build
 
 CMD ["/bin/bash"]

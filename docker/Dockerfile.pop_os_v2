@@ -1,0 +1,111 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+    build-essential \
+    git \
+    g++ \
+    autotools-dev \
+    libgtkmm-3.0-dev \
+    libgtkmm-3.0-doc \
+    mm-common \
+    libgtk-4-bin \
+    libgtk-4-common \
+    libgtk-4-doc \
+    pkg-config \
+    meson \
+    ninja-build \
+    libglib2.0-dev \
+    libgdk-pixbuf2.0-dev \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libepoxy-dev \
+    libgraphene-dev \
+    libwayland-dev \
+    wayland-protocols \
+    libxkbcommon-dev \
+    libx11-dev \
+    libxext-dev \
+    libxfixes-dev \
+    libxi-dev \
+    libxrandr-dev \
+    libxcursor-dev \
+    libxdamage-dev \
+    libxinerama-dev \
+    libxcomposite-dev \
+    libvulkan-dev \
+    libfontconfig-dev \
+    libfreetype6-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libtiff-dev \
+    gobject-introspection \
+    gettext \
+    shared-mime-info \
+    libgstreamer1.0-dev \
+    libgstreamer-plugins-base1.0-dev \
+    libgstreamer-gl1.0-dev \
+    libegl1-mesa-dev \
+    libgles2-mesa-dev \
+    docbook-xsl \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build
+
+# Build GTK 4 from source
+RUN wget https://download.gnome.org/sources/gtk/4.6/gtk-4.6.9.tar.xz && \
+    tar xvf gtk-4.6.9.tar.xz && \
+    cd gtk-4.6.9 && \
+    meson setup --prefix /opt/gtk build && \
+    ninja -C build && \
+    ninja -C build install && \
+    cd .. && rm -rf gtk-4.6.9 gtk-4.6.9.tar.xz
+
+ENV PKG_CONFIG_PATH /opt/gtk/lib/pkgconfig:${PKG_CONFIG_PATH}
+ENV LD_LIBRARY_PATH /opt/gtk/lib:${LD_LIBRARY_PATH}
+ENV PATH /opt/gtk/bin:${PATH}
+
+# Build libsigc++ from source
+RUN wget ftp://ftp.acc.umu.se/pub/gnome/sources/libsigc++/3.0/libsigc++-3.0.7.tar.xz && \
+    tar xvf libsigc++-3.0.7.tar.xz && \
+    cd libsigc++-3.0.7 && \
+    ./autogen.sh --prefix=/opt/gtk && \
+    make && \
+    make install && \
+    cd .. && rm -rf libsigc++-3.0.7 libsigc++-3.0.7.tar.xz
+
+# Build glibmm from source
+RUN wget https://download.gnome.org/sources/glibmm/2.68/glibmm-2.68.2.tar.xz && \
+    tar xvf glibmm-2.68.2.tar.xz && \
+    cd glibmm-2.68.2 && \
+    ./autogen.sh --prefix=/opt/gtk && \
+    make && \
+    make install && \
+    cd .. && rm -rf glibmm-2.68.2 glibmm-2.68.2.tar.xz
+
+# Build cairomm from source
+RUN git clone https://gitlab.freedesktop.org/cairo/cairomm.git && \
+    cd cairomm && \
+    ./autogen.sh --prefix=/opt/gtk && \
+    make && \
+    make install && \
+    cd .. && rm -rf cairomm
+
+# Build pangomm from source
+RUN wget https://download.gnome.org/sources/pangomm/2.50/pangomm-2.50.0.tar.xz && \
+    tar xvf pangomm-2.50.0.tar.xz && \
+    cd pangomm-2.50.0 && \
+    ./autogen.sh --prefix=/opt/gtk && \
+    make && \
+    make install && \
+    cd .. && rm -rf pangomm-2.50.0 pangomm-2.50.0.tar.xz
+
+# Build gtkmm from source
+RUN wget https://download.gnome.org/sources/gtkmm/4.6/gtkmm-4.6.1.tar.xz && \
+    tar xvf gtkmm-4.6.1.tar.xz && \
+    cd gtkmm-4.6.1 && \
+    ./autogen.sh --prefix=/opt/gtk && \
+    make && \
+    make install && \
+    cd .. && rm -rf gtkmm-4.6.1 gtkmm-4.6.1.tar.xz
+
+CMD ["/bin/bash"]
